@@ -38,5 +38,5 @@ mod 'default_packages',
     :branch => :control_branch
 
 mod 'autossh',
-    :git => 'git@github.com:YOUR_GITHUB_USER/autossh.git',
-    :branch => :control_branch
+    :git => 'https://github.com/ethan-c-houghton/puppet-autossh.git',
+    :branch => 'main'

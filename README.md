@@ -34,8 +34,9 @@ proxies. Environments are deployed with r10k; secrets live in hiera-eyaml.
 This is a sanitized copy. Before it will run, replace the placeholders:
 
 - `homelab.example`: your own domain.
-- `YOUR_GITHUB_USER`: where your control repo and the `default_packages` and `autossh`
-  modules live (those two modules are not included here).
+- `YOUR_GITHUB_USER`: where your control repo and the `default_packages` module live
+  (`default_packages` is not included here). The `autossh` module is public:
+  [puppet-autossh](https://github.com/ethan-c-houghton/puppet-autossh).
 - `REPLACE_WITH_SHA512_CRYPT_HASH`: generate with `mkpasswd -m sha-512`.
 - `AAAA_REPLACE_WITH_...`: your SSH public keys.
 - `ENC[PKCS7,REPLACE_WITH_EYAML_ENCRYPTED_VALUE]`: encrypt your own values with
