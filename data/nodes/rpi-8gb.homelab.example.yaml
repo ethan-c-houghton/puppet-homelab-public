@@ -42,6 +42,7 @@ hiera::hierarchy:
   - name: 'Hiera Secrets'
     paths:
       - "secrets/%{literal('%')}{trusted.certname}.eyaml"
+      - 'secrets/common.eyaml'
     lookup_key: 'eyaml_lookup_key'
     options:
       pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'

@@ -29,6 +29,7 @@ node 'rpi-4gb.homelab.example' {
 node 'rpi-8gb.homelab.example' {
   include profile::raspberry_pi
   include profile::base
+  include autossh
   include r10k
   include hiera
   include docker
@@ -69,4 +70,18 @@ node 'rpi-8gb.homelab.example' {
   #   pass    => 0,
   #   require => File['/mnt/media_02'],
   # }
+}
+
+node 'prod-proxy.homelab.example' {
+  include profile::base
+  include nginx
+}
+
+node 'dev-proxy.homelab.example' {
+  include profile::base
+  include nginx
+}
+
+node 'default' {
+  include profile::base
 }

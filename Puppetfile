@@ -39,4 +39,4 @@ mod 'default_packages',
 
 mod 'autossh',
     :git => 'https://github.com/ethan-c-houghton/puppet-autossh.git',
-    :branch => 'main'
+    :tag => 'v1.0.0'
