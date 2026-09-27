@@ -1,0 +1,117 @@
+puppet_agent::config:
+  - section: main
+    setting: server
+    value: puppetserver.homelab.example
+  - section: main
+    setting: environment
+    value: puppet_homelab_production
+  - section: main
+    setting: hiera_config
+    value: /etc/puppetlabs/puppet/hiera.yaml
+  # - section: server
+  #   setting: dns_alt_names
+  #   value: 'puppet,puppetserver,puppetserver.homelab.example,rpi1.homelab.example,puppetserver.local,proxy.homelab.example,dev-cloud.homelab.example,rpi-4gb.homelab.example,dev_proxy.homelab.example,prod_proxy.homelab.example,dev-proxy.homelab.example,prod-proxy.homelab.example'
+  # - section: server
+  #   setting: storeconfigs
+  #   value: 'true'
+  # - section: server
+  #   setting: storeconfigs_backend
+  #   value: puppetdb
+
+# r10k::configfile: "/etc/puppetlabs/r10k/r10k.yaml"
+# r10k::r10k_basedir: "/etc/puppetlabs/r10k"
+# r10k::puppetconf_path: "/etc/puppetlabs/"
+# r10k::provider: "gem"
+# r10k::sources:
+#   puppet_homelab:
+#     remote: "git@github.com:YOUR_GITHUB_USER/puppet-homelab.git"
+#     basedir: "/etc/puppetlabs/code/environments/"
+#     prefix: true
+
+# hiera::eyaml: true
+# hiera::eyaml::create_keys: true
+# hiera::eyaml::_keysdir: "/etc/puppetlabs/keys"
+# hiera::provider: 'apt'
+# hiera::hiera_version: '5'
+# hiera::hiera5_defaults:
+#   datadir: "code/environments/%{literal('%')}{environment}/data"
+#   data_hash: 'yaml_data'
+# hiera::hierarchy:
+#   - name: 'Hiera Data'
+#     paths:
+#       - "nodes/%{literal('%')}{trusted.certname}.yaml"
+#       - "os/%{literal('%')}{facts.os.family}.yaml"
+#       - 'common.yaml'
+#   - name: 'Hiera Secrets'
+#     paths:
+#       - "secrets/%{literal('%')}{trusted.certname}.eyaml"
+#     lookup_key: 'eyaml_lookup_key'
+#     options:
+#       pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+#       pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+
+# cron::job:
+#   'r10k':
+#     command: '/usr/bin/r10k deploy environment -p --config /etc/puppetlabs/r10k/r10k.yaml && echo "Last r10k Run: $(date)" > /var/log/r10k.log'
+#     minute: '*'
+#     hour: '*'
+#     date: '*'
+#     month: '*'
+#     weekday: '*'
+#     user: root
+#     environment:
+#       - 'MAILTO=root'
+#       - 'PATH="/usr/bin:/bin"'
+#     description: 'r10k run'
+  # 'restart_n8n_docker':
+  #   command: 'systemctl restart docker-n8n-docker.service'
+  #   minute: '0'
+  #   hour: '0'
+  #   date: '*'
+  #   month: '*'
+  #   weekday: '*'
+  #   user: root
+  #   environment:
+  #     - 'MAILTO=root'
+  #     - 'PATH="/usr/bin:/bin"'
+  #   description: 'restart n8n docker container'
+   
+# docker::images:
+#   n8n:
+#     ensure: present
+#     image: 'n8nio/n8n:latest'
+
+# docker::runs:
+#   n8n-docker:
+#     image: 'n8nio/n8n:latest'
+#     env:
+#       - SUBDOMAIN=n8n
+#       - DOMAIN_NAME=homelab.example
+#       - WEBHOOK_TUNNEL_URL=https://n8n.homelab.example
+#       - WEBHOOK_URL=https://n8n.homelab.example
+#     ports:
+#       - '5678:5678'
+#     volumes:
+#       - 'n8n-data:/home/node/.n8n'
+#     require:
+#       - 'Docker::Image[n8n]'
+
+# autossh::config:
+#   puppet_proxy:
+#     forward_type: 'remote'
+#     local_port: '8140'
+#     remote_port: '8141'
+#     remote_host: 'prod-proxy.homelab.example'
+#   puppet_proxy_dev:
+#     forward_type: 'remote'
+#     local_port: '8140'
+#     remote_port: '8141'
+#     remote_host: 'dev-proxy.homelab.example'
+
+# zabbix::agent::agent_configfile_path: '/etc/zabbix/zabbix_agent2.conf'
+# zabbix::agent::include_dir: '/etc/zabbix/zabbix_agent2.d'
+# zabbix::agent::include_dir_purge: false
+# zabbix::agent::zabbix_package_agent: 'zabbix-agent2'
+# zabbix::agent::servicename: 'zabbix-agent2'
+# zabbix::agent::manage_startup_script: false
+# zabbix::agent::server: 'zabbix.homelab.example'

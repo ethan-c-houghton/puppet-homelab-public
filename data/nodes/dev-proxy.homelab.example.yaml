@@ -1,0 +1,39 @@
+puppet_agent::config:
+  - section: main
+    setting: certname
+    value: dev-proxy.homelab.example
+  - section: main
+    setting: environment
+    value: puppet_homelab_development
+
+accounts::user_list:
+  autossh:
+    shell: '/usr/sbin/nologin'
+    uid: 80085
+    gid: 80085
+    sshkeys:
+      - &puppet_proxy_dev_key 'ssh-rsa AAAA_REPLACE_WITH_AUTOSSH_PUBLIC_KEY puppet_autossh'
+
+nginx::nginx_streamhosts:
+  puppet_proxy:
+    ensure:                 'present'
+    listen_port:            8140
+    listen_options:         ''
+    proxy:                  'puppet_proxy'
+    proxy_read_timeout:     '60s'
+    proxy_connect_timeout:  '60s'
+
+nginx::nginx_upstreams:
+  puppet_proxy:
+    context: 'stream'
+    members:
+      'localhost:8141':
+        server: 'localhost'
+        port: 8141
+
+nginx::stream: true
+nginx::stream_access_log: "/var/log/nginx/stream-access.log basic"
+nginx::stream_log_format:
+  basic: '$remote_addr [$time_local] $protocol $status $bytes_sent $bytes_received $session_time'
+nginx::log_format:
+  main: '$remote_addr - $remote_user [$time_local] "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent"'

@@ -1,0 +1,92 @@
+---
+accounts::user_list:
+  admin:
+    shell: '/usr/bin/zsh'
+    uid: 1337
+    gid: 1337
+    groups: ['sudo']
+    password: 'REPLACE_WITH_SHA512_CRYPT_HASH'  # mkpasswd -m sha-512
+    sshkeys:
+      - &sshkey 'ssh-ed25519 AAAA_REPLACE_WITH_YOUR_PUBLIC_KEY admin'
+  root:
+    shell: '/usr/bin/zsh'
+    locked: true
+  ubuntu:
+    locked: true
+
+ohmyzsh::installs:
+  admin:
+    set_sh: true
+  root:
+    set_sh: true
+ohmyzsh::themes:
+  admin:
+    theme: 'fox'
+  root:
+    theme: 'darkblood'
+
+ohmyzsh::plugins:
+  admin:
+    plugins: [ 'git', 'screen', 'ssh-agent', 'sudo', 'tmux' ]
+    custom_plugins:
+      zsh-syntax-highlighting:
+       ensure: latest
+       source: git
+       url:    'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+      zsh-autosuggestions:
+        ensure: latest
+        source: git
+        url:    'https://github.com/zsh-users/zsh-autosuggestions.git'
+  root:
+    plugins: [ 'git', 'screen', 'ssh-agent', 'sudo', 'tmux' ]
+    custom_plugins:
+      zsh-syntax-highlighting:
+       ensure: latest
+       source: git
+       url:    'https://github.com/zsh-users/zsh-syntax-highlighting.git'
+      zsh-autosuggestions:
+        ensure: latest
+        source: git
+        url:    'https://github.com/zsh-users/zsh-autosuggestions.git'
+
+default_packages: 
+  - 'telnet'
+  - 'net-tools'
+  - 'nmap'
+  - 'zip'
+  - 'tcpdump'
+  - 'htop'
+  - 'curl'
+  - 'wget'
+  - 'sl'
+  - 'netcat-traditional'
+  - 'ncdu'
+  - 'tmux'
+  - 'dnsutils'
+  - 'nethogs'
+  - 'nnn'
+  - 'neofetch'
+  - 'traceroute'
+  - 'at'
+
+puppet_agent::config:
+  - section: main
+    setting: runinterval
+    value: '5m'
+  - section: main
+    setting: server
+    value: puppetserver.homelab.example
+
+ssh::server_options:
+  PasswordAuthentication: 'no'
+
+#########################################################
+
+# Lookup Options
+lookup_options:
+  default_packages: 
+    merge:
+      strategy: deep
+  accounts::user_list:
+    merge:
+      strategy: deep

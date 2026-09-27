@@ -1,0 +1,145 @@
+autossh::config:
+  wazuh_proxy:
+    remote_host: 'prod-proxy.homelab.example'
+    bindings:
+      wazuh_agent_1514:
+        forward_type: 'remote'
+        remote_port: 1513
+        local_port: 1514
+      wazuh_agent_enrollment_1515:
+        forward_type: 'remote'
+        remote_port: 1516
+        local_port: 1515
+      wazuh_server_port_55000:
+        forward_type: 'remote'
+        remote_port: 55001
+        local_port: 55000
+
+r10k::configfile: "/etc/puppetlabs/r10k/r10k.yaml"
+r10k::r10k_basedir: "/etc/puppetlabs/r10k"
+r10k::puppetconf_path: "/etc/puppetlabs/"
+r10k::provider: "gem"
+r10k::sources:
+  puppet_homelab:
+    remote: "git@github.com:YOUR_GITHUB_USER/puppet-homelab.git"
+    basedir: "/etc/puppetlabs/code/environments/"
+    prefix: true
+
+hiera::eyaml: true
+hiera::eyaml::create_keys: true
+hiera::eyaml::_keysdir: "/etc/puppetlabs/keys"
+hiera::provider: 'apt'
+hiera::hiera_version: '5'
+hiera::hiera5_defaults:
+  datadir: "code/environments/%{literal('%')}{environment}/data"
+  data_hash: 'yaml_data'
+hiera::hierarchy:
+  - name: 'Hiera Data'
+    paths:
+      - "nodes/%{literal('%')}{trusted.certname}.yaml"
+      - "os/%{literal('%')}{facts.os.family}.yaml"
+      - 'common.yaml'
+  - name: 'Hiera Secrets'
+    paths:
+      - "secrets/%{literal('%')}{trusted.certname}.eyaml"
+    lookup_key: 'eyaml_lookup_key'
+    options:
+      pkcs7_private_key: '/etc/puppetlabs/puppet/keys/private_key.pkcs7.pem'
+      pkcs7_public_key: '/etc/puppetlabs/puppet/keys/public_key.pkcs7.pem'
+
+cron::job:
+  'r10k':
+    command: '/usr/bin/r10k deploy environment -p --config /etc/puppetlabs/r10k/r10k.yaml && echo "Last r10k Run: $(date)" > /var/log/r10k.log'
+    minute: '*'
+    hour: '*'
+    date: '*'
+    month: '*'
+    weekday: '*'
+    user: root
+    environment:
+      - 'MAILTO=root'
+      - 'PATH="/usr/bin:/bin"'
+    description: 'r10k run'
+
+accounts::user_list:
+  admin:
+    shell: '/usr/bin/zsh'
+    uid: 1337
+    gid: 1337
+    groups: ['sudo']
+    password: 'REPLACE_WITH_SHA512_CRYPT_HASH'  # mkpasswd -m sha-512
+    sshkeys:
+      - &sshkey 'ssh-ed25519 AAAA_REPLACE_WITH_YOUR_PUBLIC_KEY admin'
+  root:
+    shell: '/usr/bin/zsh'
+    locked: true
+
+puppet_agent::config:
+  - section: main
+    setting: certname
+    value: rpi-8gb.homelab.example
+  - section: main
+    setting: environment
+    value: puppet_homelab_development
+  - section: main
+    setting: server
+    value: puppetserver.homelab.example
+
+
+ohmyzsh::themes:
+  admin:
+    theme: 'geoffgarside'
+  root:
+    theme: 'darkblood'
+    # Other cool themes:
+    # - xiong-chiamiov-plus
+    # - geoffgarside
+    # - linuxonly
+    # - af-magic
+    # - fletcherm
+    # - sonicradish
+    # - afowler
+
+zabbix::include_dir: '/etc/zabbix/zabbix_agent2.d'
+zabbix::include_dir_purge: false
+zabbix::zabbix_package_agent: 'zabbix-agent2'
+zabbix::servicename: 'zabbix-agent2'
+zabbix::manage_startup_script: false
+zabbix::server: 'zabbix.homelab.example'
+zabbix::zabbix_url: 'zabbix.homelab.example'
+apache::mpm_module: 'prefork'
+# zabbix::manage_repo: True
+# zabbix::manage_apt: True
+# zabbix::repo_location: 'http://repo.zabbix.com/zabbix/7.4/stable/debian/'
+zabbix::zabbix_version: '7.4'
+
+zabbix::agent_configfile_path: '/etc/zabbix/zabbix_agent2.conf'
+zabbix::agent::include_dir_purge: false
+zabbix::agent::zabbix_package_agent: 'zabbix-agent2'
+zabbix::agent::servicename: 'zabbix-agent2'
+zabbix::agent::manage_startup_script: false
+zabbix::agent::server: 'zabbix.homelab.example'
+
+docker::images:
+  n8n:
+    ensure: present
+    image: 'n8nio/n8n:latest'
+  glance:
+    ensure: present
+    image: 'glanceapp/glance:latest'
+
+
+docker::runs:
+  n8n-docker:
+    image: 'n8nio/n8n:latest'
+    env:
+      - SUBDOMAIN=n8n
+      - DOMAIN_NAME=homelab.example
+      - WEBHOOK_TUNNEL_URL=https://n8n.homelab.example
+      - WEBHOOK_URL=https://n8n.homelab.example
+    ports:
+      - '5678:5678'
+    volumes:
+      - 'n8n-data:/home/node/.n8n'
+    require:
+      - 'Docker::Image[n8n]'
